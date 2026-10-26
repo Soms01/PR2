@@ -1,16 +1,52 @@
-# React + Vite
+# Лабораторно-практичне заняття №2: Розробка додатку для візуалізації вимірювань радару
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 1. Короткий опис роботи
 
-Currently, two official plugins are available:
+**Мета роботи:** Розробити додаток, який зчитує дані з емульованої вимірювальної частини радару (запущеного у Docker-контейнері) та відображає задетектовані цілі на графіку в полярних координатах у реальному часі.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+**Що саме реалізовано:**
+* **Обов’язковий мінімум:** 
+  * Налаштовано підключення до емулятора через WebSocket.
+  * Реалізовано обробку повідомлень (JSON) та перерахунок часу поширення ехо-сигналу у кілометри.
+  * Створено динамічний полярний графік (за допомогою Plotly), де кожна ціль відображається як точка. 
+  * Налаштовано поступове згасання старих точок для формування "сліду" руху цілі.
+* **Додаткові завдання:** 
+  * Створено панель керування параметрами радара (швидкість обертання, кількість цілей, кількість вимірювань, швидкість цілей) за допомогою відправки PUT-запитів через API (`/config`).
 
-## React Compiler
+## 2. Інструкції для запуску
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**Крок 1. Запуск емулятора радара (Docker)**
+Для запуску бекенду необхідний встановлений Docker. Виконайте в терміналі команду:
+```bash
+docker run --rm --name radar-emulator -p 21700:21700 iperekrestov/university:radar-emulation-service-2026
+```
 
-## Expanding the ESLint configuration
+**Крок 2. Запуск клієнтського додатку (React)**
+Для роботи додатку потрібен встановлений Node.js. Відкрийте термінал у папці проекту та виконайте:
+```bash
+# Встановлення залежностей (лише при першому запуску)
+npm install
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+# Запуск локального сервера
+npm run dev
+```
+Додаток буде доступний у браузері за адресою: `http://localhost:5173`.
+
+## 3. Результати роботи
+
+**Основний результат (графік з цілями від емулятора):**
+![Основний графік радара](https://github.com/Soms01/PR2/blob/main/image/%D0%97%D0%BD%D1%96%D0%BC%D0%BE%D0%BA%20%D0%B5%D0%BA%D1%80%D0%B0%D0%BD%D0%B0%202026-10-26%20195258.png)
+
+
+**Зміна параметрів через API (додаткове завдання):**
+До зміни параметрів (наприклад, 5 цілей):
+![До зміни параметрів](https://github.com/Soms01/PR2/blob/main/image/%D0%97%D0%BD%D1%96%D0%BC%D0%BE%D0%BA%20%D0%B5%D0%BA%D1%80%D0%B0%D0%BD%D0%B0%202026-10-26%20195318.png)
+
+
+Після зміни параметрів (наприклад, збільшено кількість цілей до 20 та змінено швидкість):
+![Після зміни параметрів](https://github.com/Soms01/PR2/blob/main/image/%D0%97%D0%BD%D1%96%D0%BC%D0%BE%D0%BA%20%D0%B5%D0%BA%D1%80%D0%B0%D0%BD%D0%B0%202026-10-26%20195332.png)
+
+
+## 4. Висновки
+
+Під час виконання цієї лабораторної роботи я дізнався, як налаштовувати безперервний обмін даними у реальному часі за допомогою протоколу WebSocket. Я закріпив навички роботи з Docker для швидкого розгортання готових сервісів-емуляторів. Також я практично застосував фізичну формулу перерахунку часу розповсюдження радіосигналу у відстань ($R = \frac{ct}{2}$), що дозволило правильно масштабувати отримані сирі дані для візуалізації на полярному графіку.
